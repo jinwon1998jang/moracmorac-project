@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:text="안녕하세요."
             android:textStyle="bold"
-            android:textSize="32sp"
+            android:textSize="22sp"
             android:textColor="@color/black"/>
 
         <TextView
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:text="회원가입은 구글계정으로 가능합니다"
             android:textStyle="bold"
-            android:textSize="36sp"
+            android:textSize="22sp"
             android:textColor="@color/black"/>
 
     </LinearLayout>

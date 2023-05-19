@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:text="모락모락"
             android:textStyle="bold"
-            android:textSize="32sp"
+            android:textSize="22sp"
             android:textColor="@color/black"/>
 
         <TextView
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:text="로그인 페이지"
             android:textStyle="bold"
-            android:textSize="36sp"
+            android:textSize="22sp"
             android:textColor="@color/black"/>
 
     </LinearLayout>
@@ -75,9 +75,17 @@
         <com.google.android.material.button.MaterialButton
             android:layout_width="match_parent"
             android:id="@+id/login_btn"
-            android:layout_height="64dp"
-            android:text="LogIn"
+            android:layout_height="54dp"
+            android:text="푸드트럭 사장 로그인"
             android:layout_marginTop="12dp"
+            android:textSize="16sp"
+            />
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:id="@+id/login_btnn"
+            android:layout_height="54dp"
+            android:text="푸드트럭 고객 로그인"
+            android:layout_marginTop="10dp"
             android:textSize="16sp"
             />
 

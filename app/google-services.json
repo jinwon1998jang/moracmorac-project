@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "31641205423",
+    "firebase_url": "https://moracmorac-ce265-default-rtdb.firebaseio.com",
+    "project_id": "moracmorac-ce265",
+    "storage_bucket": "moracmorac-ce265.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:31641205423:android:d095664520a1caaa0e725a",
+        "android_client_info": {
+          "package_name": "com.example.moracmoracsignintest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "31641205423-2fk39oef65447sth0c4ll0rjst3ppjj1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.moracmoracsignintest",
+            "certificate_hash": "0a45f46d0bfcddd4da1ed2a84d0514b43cf9875b"
+          }
+        },
+        {
+          "client_id": "31641205423-f5etrp1ae0619r9nf6qijru3ob4qh9mc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWneN316XKNWIIEB63BVL-xcQOlB5vC-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "31641205423-f5etrp1ae0619r9nf6qijru3ob4qh9mc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
