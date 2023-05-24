@@ -8,16 +8,21 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,26 +31,37 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
     private static final String TAG = MapsActivity.class.getSimpleName();
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     private GoogleMap mMap;
     private Marker currentMarker;
-
+    private EditText searchEditText;
+    private Button searchButton;
+    private Button displayAllMarkersButton;
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnMapClickListener(this);
 
-        // 권한 체크
+        // Check for permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission is not granted
@@ -56,7 +72,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             // Permission is granted
             mMap.setMyLocationEnabled(true);
 
-            // 현재 위치로 이동
+            // Move to current location
             LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             Criteria criteria = new Criteria();
             Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
@@ -65,86 +81,194 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f));
             }
         }
+
+        // Display all markers initially
+        displayAllMarkers();
     }
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
 
-        // Firebase SDK 초기화
-        FirebaseApp.initializeApp(this);
-
-        // 지도를 표시하기 위한 SupportMapFragment 생성 및 등록
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-        // Realtime Database에 접근하기 위한 DatabaseReference 객체 생성
+    private void displayAllMarkers() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
 
-        // 마커 추가 버튼 클릭 이벤트 리스너
-        Button addMarkerButton = findViewById(R.id.add_marker_button);
-        addMarkerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Get current location
-                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                Criteria criteria = new Criteria();
-                if (ContextCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    // Request permission if it hasn't been granted yet
-                    ActivityCompat.requestPermissions(MapsActivity.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                            REQUEST_LOCATION_PERMISSION);
-                    return;
-                }
-
-                Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-                if (location != null) {
-                    LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                    if (currentMarker != null) {
-                        currentMarker.remove();
-                    }
-                    // Add marker at current location
-                    currentMarker = mMap.addMarker(new MarkerOptions()
-                            .position(currentLocation)
-                            .title("모락모락"));
-
-                    // Realtime Database에 마커 정보 저장
-                    DatabaseReference newMarkerRef = databaseReference.push();
-                    newMarkerRef.child("latitude").setValue(currentLocation.latitude);
-                    newMarkerRef.child("longitude").setValue(currentLocation.longitude);
-                    newMarkerRef.child("title").setValue("모락모락");
-
-                    Toast.makeText(MapsActivity.this, "가게가 등록되었습니다", Toast.LENGTH_SHORT).show();
-
-                    // Move camera to current location
-
-                    startActivity(new Intent(MapsActivity.this,CEOMainActivity.class));
-
-                }
-            }
-        });
-
-        // Realtime Database에서 마커 정보를 가져
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot markerSnapshot : dataSnapshot.getChildren()) {
-                    double latitude = markerSnapshot.child("latitude").getValue(Double.class);
-                    double longitude = markerSnapshot.child("longitude").getValue(Double.class);
-                    String title = markerSnapshot.child("title").getValue(String.class);
-                    LatLng location = new LatLng(latitude, longitude);
-                    mMap.addMarker(new MarkerOptions().position(location).title(title));
+                    MarkerData markerData = markerSnapshot.getValue(MarkerData.class);
+                    if (markerData != null) {
+                        LatLng location = new LatLng(markerData.getLatitude(), markerData.getLongitude());
+                        mMap.addMarker(new MarkerOptions()
+                                .position(location)
+                                .title(markerData.getName())
+                                .snippet(markerData.getContent()));
+                    }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", databaseError.toException());
+                Log.e(TAG, "Failed to read marker data from Firebase Realtime Database: " + databaseError.getMessage());
+            }
+        });
+    }
+
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        if (currentMarker != null) {
+            currentMarker.remove();
+        }
+
+        // Dialog or input fields to get name and content from the user
+        // Using AlertDialog as an example to get name and content input
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsActivity.this);
+        dialogBuilder.setTitle("푸드트럭 등록");
+
+        // Add views to input name and content from the user
+        LinearLayout layout = new LinearLayout(MapsActivity.this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        final EditText nameEditText = new EditText(MapsActivity.this);
+        nameEditText.setHint("푸드트럭명");
+        layout.addView(nameEditText);
+
+        final EditText contentEditText = new EditText(MapsActivity.this);
+        contentEditText.setHint("푸드트럭 내용");
+        layout.addView(contentEditText);
+
+        dialogBuilder.setView(layout);
+
+        dialogBuilder.setPositiveButton("추가", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String name = nameEditText.getText().toString().trim();
+                String content = contentEditText.getText().toString().trim();
+
+                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(content)) {
+                    addMarker(latLng, name, content);
+                } else {
+                    Toast.makeText(MapsActivity.this, "푸드트럭명과 내용을 입력하세요.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        dialogBuilder.show();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_maps);
+
+        searchEditText = findViewById(R.id.search_edittext);
+        searchButton = findViewById(R.id.search_button);
+        displayAllMarkersButton = findViewById(R.id.display_all_markers_button);
+
+        FirebaseApp.initializeApp(this);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String searchQuery = searchEditText.getText().toString().trim();
+                if (!TextUtils.isEmpty(searchQuery)) {
+                    searchMarkers(searchQuery);
+                }
+            }
+        });
+
+        displayAllMarkersButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayAllMarkers();
+            }
+        });
+    }
+
+    private void addMarker(LatLng latLng, String name, String content) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
+
+        MarkerData markerData = new MarkerData(name, content, latLng.latitude, latLng.longitude);
+        String markerId = databaseReference.push().getKey();
+
+        databaseReference.child(markerId).setValue(markerData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(MapsActivity.this, "마커가 추가되었습니다.", Toast.LENGTH_SHORT).show();
+                        mMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .title(name)
+                                .snippet(content));
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MapsActivity.this, "마커 추가에 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "Failed to add marker to Firebase Realtime Database: " + e.getMessage());
+                    }
+                });
+    }
+
+    private void searchMarkers(String query) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
+
+        Query searchQuery = databaseReference.orderByChild("name").startAt(query).endAt(query + "\uf8ff");
+        Query contentQuery = databaseReference.orderByChild("content").startAt(query).endAt(query + "\uf8ff");
+
+        List<MarkerData> markerList = new ArrayList<>();
+
+        searchQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot markerSnapshot : dataSnapshot.getChildren()) {
+                    MarkerData markerData = markerSnapshot.getValue(MarkerData.class);
+                    if (markerData != null && !markerList.contains(markerData)) {
+                        markerList.add(markerData);
+                    }
+                }
+
+                contentQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot markerSnapshot : dataSnapshot.getChildren()) {
+                            MarkerData markerData = markerSnapshot.getValue(MarkerData.class);
+                            if (markerData != null && !markerList.contains(markerData)) {
+                                markerList.add(markerData);
+                            }
+                        }
+
+                        mMap.clear(); // Clear all existing markers
+
+                        for (MarkerData markerData : markerList) {
+                            LatLng location = new LatLng(markerData.getLatitude(), markerData.getLongitude());
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(location)
+                                    .title(markerData.getName())
+                                    .snippet(markerData.getContent()));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e(TAG, "Failed to read marker data from Firebase Realtime Database: " + databaseError.getMessage());
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Failed to read marker data from Firebase Realtime Database: " + databaseError.getMessage());
             }
         });
     }
 }
-
