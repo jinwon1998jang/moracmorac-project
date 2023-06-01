@@ -68,7 +68,7 @@ public class CEOMainActivity extends AppCompatActivity {
         gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CEOMainActivity.this, MapsActivity.class);
+                Intent intent = new Intent(CEOMainActivity.this, MapsEditActivity.class);
                 startActivity(intent);
             }
         });
