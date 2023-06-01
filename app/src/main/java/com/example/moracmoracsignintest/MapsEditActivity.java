@@ -95,18 +95,20 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
+// ...
+
     @Override
     public void onMapClick(LatLng latLng) {
         if (currentMarker != null) {
             currentMarker.remove();
         }
 
-        // Dialog or input fields to get name and content from the user
-        // Using AlertDialog as an example to get name and content input
+        // Dialog or input fields to get name, content, and business hours from the user
+        // Using AlertDialog as an example to get name, content, and business hours input
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsEditActivity.this);
         dialogBuilder.setTitle("푸드트럭 등록");
 
-        // Add views to input name and content from the user
+        // Add views to input name, content, and business hours from the user
         LinearLayout layout = new LinearLayout(MapsEditActivity.this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
@@ -118,6 +120,10 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
         contentEditText.setHint("푸드트럭 설명");
         layout.addView(contentEditText);
 
+        final EditText hoursEditText = new EditText(MapsEditActivity.this);
+        hoursEditText.setHint("영업 시간");
+        layout.addView(hoursEditText);
+
         dialogBuilder.setView(layout);
 
         dialogBuilder.setPositiveButton("등록", new DialogInterface.OnClickListener() {
@@ -125,12 +131,13 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
             public void onClick(DialogInterface dialog, int which) {
                 String name = nameEditText.getText().toString();
                 String content = contentEditText.getText().toString();
+                String hours = hoursEditText.getText().toString();
 
-                // Add marker at clicked location with name and content
+                // Add marker at clicked location with name, content, and business hours
                 currentMarker = mMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title(name)
-                        .snippet(content));
+                        .snippet(content + "\n영업 시간: " + hours));
 
                 // Save marker information to Realtime Database with the current user's ID
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
@@ -139,6 +146,7 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
                 newMarkerRef.child("longitude").setValue(latLng.longitude);
                 newMarkerRef.child("title").setValue(name);
                 newMarkerRef.child("content").setValue(content);
+                newMarkerRef.child("hours").setValue(hours);
                 newMarkerRef.child("userId").setValue(currentUserId); // 현재 사용자의 Firebase 아이디 저장
 
                 Toast.makeText(MapsEditActivity.this, "푸드트럭 등록", Toast.LENGTH_SHORT).show();
@@ -151,6 +159,9 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
         dialogBuilder.setNegativeButton("취소", null);
         dialogBuilder.show();
     }
+
+// ...
+
 
 // ...
 
@@ -250,6 +261,7 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
                     Double longitude = markerSnapshot.child("longitude").getValue(Double.class);
                     String title = markerSnapshot.child("title").getValue(String.class);
                     String content = markerSnapshot.child("content").getValue(String.class);
+                    String hours = markerSnapshot.child("hours").getValue(String.class);
                     String markerUserId = markerSnapshot.child("userId").getValue(String.class);
 
                     if (latitude != null && longitude != null) {
@@ -257,7 +269,7 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(location)
                                 .title(title)
-                                .snippet(content));
+                                .snippet(content + "\n영업 시간: " + hours));
 
                         // Set the user ID as the tag for the marker
                         marker.setTag(markerUserId);
@@ -265,6 +277,7 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
                         Log.e(TAG, "Latitude 또는 longitude가 null입니다.");
                     }
                 }
+
             }
 
             @Override

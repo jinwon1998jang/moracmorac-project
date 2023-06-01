@@ -46,7 +46,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
     private static final String TAG = MapsActivity.class.getSimpleName();
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
@@ -59,7 +59,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setOnMapClickListener(this);
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                // 마커를 클릭했을 때 실행되는 코드
+                // 마커에 대한 정보를 표시하는 로직을 구현하세요
+
+                // 예시: AlertDialog를 사용하여 마커 정보를 표시
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsActivity.this);
+
+                dialogBuilder.setMessage("푸드트럭 이름: " + marker.getTitle() +"\n푸드트럭 설명: " + marker.getSnippet() + "\n" +
+                        "영업시간: " + marker.getTag());
+                dialogBuilder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                dialogBuilder.show();
+
+
+                return true;
+            }
+        });
 
         // Check for permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -96,10 +118,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     MarkerData markerData = markerSnapshot.getValue(MarkerData.class);
                     if (markerData != null) {
                         LatLng location = new LatLng(markerData.getLatitude(), markerData.getLongitude());
-                        mMap.addMarker(new MarkerOptions()
+                        Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(location)
-                                .title(markerData.getName())
+                                .title(markerData.getTitle()) // 타이틀 설정
                                 .snippet(markerData.getContent()));
+
+
+                        marker.setTag(markerData.getHours());
                     }
                 }
             }
@@ -111,55 +136,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-
-    @Override
-    public void onMapClick(LatLng latLng) {
-        if (currentMarker != null) {
-            currentMarker.remove();
-        }
-
-        // Dialog or input fields to get name and content from the user
-        // Using AlertDialog as an example to get name and content input
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsActivity.this);
-        dialogBuilder.setTitle("푸드트럭 등록");
-
-        // Add views to input name and content from the user
-        LinearLayout layout = new LinearLayout(MapsActivity.this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        final EditText nameEditText = new EditText(MapsActivity.this);
-        nameEditText.setHint("푸드트럭명");
-        layout.addView(nameEditText);
-
-        final EditText contentEditText = new EditText(MapsActivity.this);
-        contentEditText.setHint("푸드트럭 내용");
-        layout.addView(contentEditText);
-
-        dialogBuilder.setView(layout);
-
-        dialogBuilder.setPositiveButton("추가", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String name = nameEditText.getText().toString().trim();
-                String content = contentEditText.getText().toString().trim();
-
-                if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(content)) {
-                    addMarker(latLng, name, content);
-                } else {
-                    Toast.makeText(MapsActivity.this, "푸드트럭명과 내용을 입력하세요.", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        dialogBuilder.show();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,32 +167,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 displayAllMarkers();
             }
         });
-    }
-
-    private void addMarker(LatLng latLng, String name, String content) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
-
-        MarkerData markerData = new MarkerData(name, content, latLng.latitude, latLng.longitude);
-        String markerId = databaseReference.push().getKey();
-
-        databaseReference.child(markerId).setValue(markerData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(MapsActivity.this, "마커가 추가되었습니다.", Toast.LENGTH_SHORT).show();
-                        mMap.addMarker(new MarkerOptions()
-                                .position(latLng)
-                                .title(name)
-                                .snippet(content));
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MapsActivity.this, "마커 추가에 실패하였습니다.", Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "Failed to add marker to Firebase Realtime Database: " + e.getMessage());
-                    }
-                });
     }
 
     private void searchMarkers(String query) {
@@ -251,10 +201,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                         for (MarkerData markerData : markerList) {
                             LatLng location = new LatLng(markerData.getLatitude(), markerData.getLongitude());
-                            mMap.addMarker(new MarkerOptions()
+                            Marker marker = mMap.addMarker(new MarkerOptions()
                                     .position(location)
-                                    .title(markerData.getName())
+                                    .title(markerData.getTitle()) // 타이틀 설정
                                     .snippet(markerData.getContent()));
+                            marker.setTag(markerData.getHours());
                         }
                     }
 
