@@ -34,7 +34,7 @@ public class CEOUploadActivity extends AppCompatActivity {
 
         //readText = findViewById(R.id.read);
 
-        Button readBtn = findViewById(R.id.read_btn);
+        Button readBtn = findViewById(R.id.store_btn);
         readBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
