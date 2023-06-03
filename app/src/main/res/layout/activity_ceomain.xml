@@ -175,6 +175,57 @@
       android:layout_height="wrap_content"
       android:orientation="horizontal"
       app:layout_constraintGuide_begin="305dp" />
+<!-- signupCeoname, signupPhonenum, signupStorename, signupHtpay, signupCategory-->
+
+  <TextView
+      android:id="@+id/signupceoname"
+      android:layout_width="150dp"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="200dp"
+      android:text="이름"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+  <TextView
+      android:id="@+id/signupphonenum"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="156dp"
+      android:text="연락처"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+  <TextView
+      android:id="@+id/signupstorename"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="112dp"
+      android:text="가게이름"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+  <TextView
+      android:id="@+id/signuphtpay"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="68dp"
+      android:text="결제방식"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+  <TextView
+      android:id="@+id/signupcategory"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="20dp"
+      android:text="카테고리"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
