@@ -43,6 +43,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
     private static final String TAG = MapsEditActivity.class.getSimpleName();
     private static final int REQUEST_LOCATION_PERMISSION = 1;
@@ -97,18 +100,16 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
 
 // ...
 
+
     @Override
     public void onMapClick(LatLng latLng) {
         if (currentMarker != null) {
             currentMarker.remove();
         }
 
-        // Dialog or input fields to get name, content, and business hours from the user
-        // Using AlertDialog as an example to get name, content, and business hours input
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsEditActivity.this);
         dialogBuilder.setTitle("푸드트럭 등록");
 
-        // Add views to input name, content, and business hours from the user
         LinearLayout layout = new LinearLayout(MapsEditActivity.this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
@@ -120,9 +121,35 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
         contentEditText.setHint("푸드트럭 설명");
         layout.addView(contentEditText);
 
-        final EditText hoursEditText = new EditText(MapsEditActivity.this);
-        hoursEditText.setHint("영업 시간");
-        layout.addView(hoursEditText);
+        final EditText mondayEditText = new EditText(MapsEditActivity.this);
+        mondayEditText.setHint("월요일 영업 시간");
+        layout.addView(mondayEditText);
+
+        final EditText tuesdayEditText = new EditText(MapsEditActivity.this);
+        tuesdayEditText.setHint("화요일 영업 시간");
+        layout.addView(tuesdayEditText);
+
+        final EditText wendnesdayEditText = new EditText(MapsEditActivity.this);
+        wendnesdayEditText.setHint("수요일 영업 시간");
+        layout.addView(wendnesdayEditText);
+
+        final EditText thursdayEditText = new EditText(MapsEditActivity.this);
+        thursdayEditText.setHint("목요일 영업 시간");
+        layout.addView(thursdayEditText);
+
+        final EditText fridayEditText = new EditText(MapsEditActivity.this);
+        fridayEditText.setHint("금요일 영업 시간");
+        layout.addView(fridayEditText);
+
+        final EditText saturdayEditText = new EditText(MapsEditActivity.this);
+        saturdayEditText.setHint("토요일 영업 시간");
+        layout.addView(saturdayEditText);
+
+        final EditText sundayEditText = new EditText(MapsEditActivity.this);
+        sundayEditText.setHint("일요일 영업 시간");
+        layout.addView(sundayEditText);
+
+        // 추가적인 요일 EditText 필드 추가
 
         dialogBuilder.setView(layout);
 
@@ -131,40 +158,148 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
             public void onClick(DialogInterface dialog, int which) {
                 String name = nameEditText.getText().toString();
                 String content = contentEditText.getText().toString();
-                String hours = hoursEditText.getText().toString();
+                String mondayHours = mondayEditText.getText().toString();
+                String tuesdayHours = tuesdayEditText.getText().toString();
+                String wendnesdayHours = wendnesdayEditText.getText().toString();
+                String thursdayHours = thursdayEditText.getText().toString();
+                String fridayHours = fridayEditText.getText().toString();
+                String saturdayHours = saturdayEditText.getText().toString();
+                String sundayHours = sundayEditText.getText().toString();
+                // 추가적인 요일 영업 시간 값 가져오기
 
-                // Add marker at clicked location with name, content, and business hours
-                currentMarker = mMap.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .title(name)
-                        .snippet(content + "\n영업 시간: " + hours));
+                HashMap<String, String> openingHours = new HashMap<>();
+                openingHours.put("월요일", mondayHours);
+                openingHours.put("화요일", tuesdayHours);
+                openingHours.put("수요일", wendnesdayHours);
+                openingHours.put("목요일", thursdayHours);
+                openingHours.put("금요일", fridayHours);
+                openingHours.put("토요일", saturdayHours);
+                openingHours.put("일요일", sundayHours);
 
-                // Save marker information to Realtime Database with the current user's ID
+                Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
+
+                marker.setTitle(name);
+                marker.setSnippet(content);
+
+                // Extract additional data from the marker as needed
+
+                MarkerData markerData = new MarkerData(UUID.randomUUID().toString(), name, content, openingHours, latLng.latitude, latLng.longitude);
+                saveMarkerData(marker);
+
+                // Save the MarkerData to Firebase Realtime Database
                 DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
-                DatabaseReference newMarkerRef = databaseReference.push();
-                newMarkerRef.child("latitude").setValue(latLng.latitude);
-                newMarkerRef.child("longitude").setValue(latLng.longitude);
-                newMarkerRef.child("title").setValue(name);
-                newMarkerRef.child("content").setValue(content);
-                newMarkerRef.child("hours").setValue(hours);
-                newMarkerRef.child("userId").setValue(currentUserId); // 현재 사용자의 Firebase 아이디 저장
-
-                Toast.makeText(MapsEditActivity.this, "푸드트럭 등록", Toast.LENGTH_SHORT).show();
-
-                // Move camera to clicked location
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
+                databaseReference.child(markerData.getId()).setValue(markerData)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(MapsEditActivity.this, "마커가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(MapsEditActivity.this, "마커 저장 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
 
-        dialogBuilder.setNegativeButton("취소", null);
+        dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
         dialogBuilder.show();
     }
+// ...
+
+    private void saveMarkerData(Marker marker) {
+        String name = marker.getTitle();
+        String content = marker.getSnippet();
+        LatLng location = marker.getPosition();
+
+        // Extract additional data from the marker as needed
+
+        // Create a HashMap for opening hours
+        HashMap<String, String> openingHours = new HashMap<>();
+        openingHours.put("월요일", "10:00 - 18:00");
+        openingHours.put("화요일", "10:00 - 18:00");
+        openingHours.put("수요일", "10:00 - 18:00");
+        openingHours.put("목요일", "10:00 - 18:00");
+        openingHours.put("금요일", "10:00 - 18:00");
+        openingHours.put("토요일", "10:00 - 18:00");
+        openingHours.put("일요일", "10:00 - 18:00");
+
+        // Create a MarkerData object
+        MarkerData markerData = new MarkerData(UUID.randomUUID().toString(), name, content, openingHours, location.latitude, location.longitude);
+
+        // Save the MarkerData to Firebase Realtime Database
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
+        databaseReference.child(markerData.getId()).setValue(markerData)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(MapsEditActivity.this, "마커가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(MapsEditActivity.this, "마커 저장 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+
 
 // ...
 
+    // ...
+    private void showEditDialog(Marker marker) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsEditActivity.this);
+        dialogBuilder.setTitle("마커 수정");
 
-// ...
+        LinearLayout layout = new LinearLayout(MapsEditActivity.this);
+        layout.setOrientation(LinearLayout.VERTICAL);
 
+        final EditText nameEditText = new EditText(MapsEditActivity.this);
+        nameEditText.setHint("푸드트럭명");
+        layout.addView(nameEditText);
+
+        final EditText contentEditText = new EditText(MapsEditActivity.this);
+        contentEditText.setHint("푸드트럭 설명");
+        layout.addView(contentEditText);
+
+        // Add additional EditText fields for opening hours
+
+        dialogBuilder.setView(layout);
+
+        dialogBuilder.setPositiveButton("수정", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String name = nameEditText.getText().toString();
+                String content = contentEditText.getText().toString();
+
+                // Update marker information
+                marker.setTitle(name);
+                marker.setSnippet(content);
+
+                // Save the updated marker information to Firebase Realtime Database
+                saveMarkerData(marker);
+            }
+        });
+
+        dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        dialogBuilder.show();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,6 +328,7 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mMap.clear(); // Clear all existing markers
 
+
                 // Implement OnMarkerClickListener to handle marker click events
                 mMap.setOnMarkerClickListener(marker -> {
                     String title = marker.getTitle();
@@ -208,9 +344,27 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
                         snippet += "\n등록자: " + markerUserId;
                     }
 
+                    MarkerData markerData = (MarkerData) marker.getTag();
+                    if (markerData != null) {
+                        HashMap<String, String> openingHours = markerData.getOpeningHours();
+                        if (openingHours != null && !openingHours.isEmpty()) {
+                            StringBuilder openingHoursText = new StringBuilder();
+                            for (String day : openingHours.keySet()) {
+                                String hours = openingHours.get(day);
+                                openingHoursText.append(day).append(": ").append(hours).append("\n");
+                            }
+                            snippet += "\n\n영업 시간:\n" + openingHoursText.toString();
+                        }
+                    }
+
                     dialogBuilder.setMessage(snippet);
                     dialogBuilder.setPositiveButton("확인", null);
-
+                    dialogBuilder.setNeutralButton("수정", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            showEditDialog(marker);
+                        }
+                    });
                     // Add delete button
                     // When the delete button is clicked, remove the marker from Firebase Realtime Database
                     dialogBuilder.setNegativeButton("삭제", (dialog, which) -> {

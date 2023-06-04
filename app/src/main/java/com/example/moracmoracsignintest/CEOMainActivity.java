@@ -4,23 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
-//추가
+import android.widget.PopupMenu;
 
+import com.google.firebase.auth.FirebaseAuth;
 
 public class CEOMainActivity extends AppCompatActivity {
 
-    //TextView read_name; //선언
-
     Button fab2;
-
     ImageButton note;
-    ImageButton menu;
-
+    ImageButton menuBtn;
     ImageButton gps;
 
     @Override
@@ -28,23 +24,10 @@ public class CEOMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ceomain);
 
-
-
-        //인텐드
-        /*TextView mv = findViewById(R.id.textView);
-        Intent secondIntent = getIntent();
-        String information = secondIntent.getStringExtra("info");
-        mv.setText(information);*/
-
-        //id 매핑
-        //read_name = (TextView)findViewById(R.id.read_name);
-        //텍스트 바꾸기
-        //read_name.setText(information);
-
-        setContentView(R.layout.activity_ceomain);
+        menuBtn = findViewById(R.id.menu_btn);
+        menuBtn.setOnClickListener((v) -> showMenu());
 
         note = findViewById(R.id.note_button);
-
         note.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,18 +36,7 @@ public class CEOMainActivity extends AppCompatActivity {
             }
         });
 
-        menu = findViewById(R.id.menu_button);
-
-        menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CEOMainActivity.this, menuActivity.class);
-                startActivity(intent);
-            }
-        });
-
         gps = findViewById(R.id.gps_button);
-
         gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,14 +45,35 @@ public class CEOMainActivity extends AppCompatActivity {
             }
         });
 
-
         fab2 = findViewById(R.id.fab2);
-
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CEOMainActivity.this, CEOUploadActivity.class);
                 startActivity(intent);
+            }
+        });
+    }
+
+    void showMenu() {
+        PopupMenu popupMenu = new PopupMenu(CEOMainActivity.this, menuBtn);
+        popupMenu.getMenu().add("Menu");
+        popupMenu.getMenu().add("Logout");
+
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (menuItem.getTitle().equals("Logout")) {
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(CEOMainActivity.this, LoginActivity.class));
+                    finish();
+                    return true;
+                } else if (menuItem.getTitle().equals("Menu")) {
+                    startActivity(new Intent(CEOMainActivity.this, menuActivity.class));
+                    return true;
+                }
+                return false;
             }
         });
     }

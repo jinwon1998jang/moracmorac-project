@@ -76,6 +76,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         dialog.dismiss();
                     }
                 });
+                dialogBuilder.setNegativeButton("자세히 보기", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MapsActivity.this, DetailActivity.class);
+                        // 여기에 마커 정보를 전달하고, DetailActivity에서 사용할 수 있도록 처리
+                        startActivity(intent);
+                    }
+                });
                 dialogBuilder.show();
 
 
@@ -108,6 +116,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         displayAllMarkers();
     }
 
+    // Display all markers initially
     private void displayAllMarkers() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
 
@@ -123,8 +132,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 .title(markerData.getTitle()) // 타이틀 설정
                                 .snippet(markerData.getContent()));
 
-
-                        marker.setTag(markerData.getHours());
+                        // 수정: openingTime을 가져와서 설정
+                        marker.setTag(markerData.getOpeningHours());
                     }
                 }
             }
@@ -135,6 +144,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
     }
+
 
 
     @Override
@@ -205,7 +215,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     .position(location)
                                     .title(markerData.getTitle()) // 타이틀 설정
                                     .snippet(markerData.getContent()));
-                            marker.setTag(markerData.getHours());
+                            marker.setTag(markerData.getOpeningHours());
                         }
                     }
 

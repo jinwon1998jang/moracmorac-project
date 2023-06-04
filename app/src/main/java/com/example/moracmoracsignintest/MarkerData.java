@@ -1,10 +1,12 @@
 package com.example.moracmoracsignintest;
 
+import java.util.HashMap;
+
 public class MarkerData {
     private String id;
-    private String title; // 변경된 필드 이름
+    private String title;
     private String content;
-    private String hours; // New field for hours
+    private HashMap<String, String> openingHours; // 요일별 영업 시간을 저장하는 HashMap
     private double latitude;
     private double longitude;
 
@@ -12,11 +14,11 @@ public class MarkerData {
         // Default constructor required for Firebase
     }
 
-    public MarkerData(String id, String title, String content, String hours, double latitude, double longitude) {
+    public MarkerData(String id, String title, String content, HashMap<String, String> openingHours, double latitude, double longitude) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.hours = hours;
+        this.openingHours = openingHours;
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -29,12 +31,20 @@ public class MarkerData {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getContent() {
         return content;
     }
 
-    public String getHours() {
-        return hours;
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public HashMap<String, String> getOpeningHours() {
+        return openingHours;
     }
 
     public double getLatitude() {
