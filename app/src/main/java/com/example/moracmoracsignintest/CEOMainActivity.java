@@ -1,5 +1,6 @@
 package com.example.moracmoracsignintest;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -9,10 +10,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class CEOMainActivity extends AppCompatActivity {
+
+    public DatabaseReference mDatabase;
+
+    TextView signupCeoname, signupPhonenum, signupStorename, signupHtpay, signupCategory;
 
     Button fab2;
     ImageButton note;
@@ -23,6 +34,14 @@ public class CEOMainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ceomain);
+
+        signupCeoname = findViewById(R.id.signupceoname);
+        signupPhonenum = findViewById(R.id.signupphonenum);
+        signupStorename = findViewById(R.id.signupstorename);
+        signupHtpay = findViewById(R.id.signuphtpay);
+        signupCategory = findViewById(R.id.signupcategory);
+
+        showData();
 
         menuBtn = findViewById(R.id.menu_btn);
         menuBtn.setOnClickListener((v) -> showMenu());
@@ -76,5 +95,36 @@ public class CEOMainActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+    public void showData() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("store data");
+
+        ValueEventListener valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // 데이터를 읽어오는 로직을 작성합니다.
+                    String ceoName = snapshot.child("ceoname").getValue(String.class);
+                    String phoneNum = snapshot.child("phonenum").getValue(String.class);
+                    String storeName = snapshot.child("storename").getValue(String.class);
+                    String htPay = snapshot.child("htpay").getValue(String.class);
+                    String cateGory = snapshot.child("category").getValue(String.class);
+
+                    // 읽어온 데이터를 활용하여 작업을 수행합니다.
+                    signupCeoname.setText(ceoName);
+                    signupPhonenum.setText(phoneNum);
+                    signupStorename.setText(storeName);
+                    signupHtpay.setText(htPay);
+                    signupCategory.setText(cateGory);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // 데이터 읽기 작업이 취소된 경우의 처리를 수행합니다.
+            }
+        };
+
+        reference.addValueEventListener(valueEventListener);
     }
 }
