@@ -1,157 +1,269 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CEOMainActivity">
+    tools:context=".CEOMainActivity"
+    tools:layout_editor_absoluteY="25dp">
 
   <!-- 상단에 텍스트 뷰 추가 -->
-
   <TextView
-      android:id="@+id/textView"
+      android:id="@+id/titletext"
       android:layout_width="109dp"
       android:layout_height="wrap_content"
       android:layout_alignParentTop="true"
       android:layout_alignParentEnd="true"
       android:layout_centerHorizontal="true"
-      android:layout_marginStart="16dp"
-      android:layout_marginTop="2dp"
-      android:layout_marginEnd="149dp"
-      android:layout_marginBottom="16dp"
-      android:text="전체 메뉴"
+      android:text="가게 정보"
       android:textSize="24sp"
-      android:textStyle="bold" />
+      android:textStyle="bold"
+      app:layout_constraintBottom_toTopOf="@+id/guideline7"
+      app:layout_constraintEnd_toStartOf="@+id/guideline3"
+      app:layout_constraintStart_toStartOf="@+id/guideline" />
+
+  <!-- 두 개의 버튼 일렬로 추가 -->
+
+
   <ImageButton
       android:id="@+id/menu_btn"
       android:layout_width="36dp"
       android:layout_height="36dp"
       android:layout_alignParentEnd="true"
-      android:layout_marginEnd="15dp"
       android:background="?attr/selectableItemBackgroundBorderless"
       android:src="@drawable/ic_baseline_menu_24"
+      app:layout_constraintBottom_toTopOf="@+id/guideline7"
+      app:layout_constraintStart_toStartOf="@+id/guideline13"
       app:tint="@color/black" />
-  <!-- 두 개의 버튼 일렬로 추가 -->
 
+  <TextView
+      android:id="@+id/textView"
+      android:layout_width="109dp"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="20dp"
+      android:text="전체 메뉴"
+      android:textSize="24sp"
+      android:textStyle="bold"
+      app:layout_constraintBottom_toTopOf="@+id/guideline4"
+      app:layout_constraintStart_toStartOf="@+id/guideline" />
 
   <TextView
       android:id="@+id/read_category"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentStart="true"
-      android:layout_alignParentTop="true"
-      android:layout_marginStart="48dp"
-      android:layout_marginTop="219dp"
+      android:layout_marginBottom="20dp"
       android:text="카테고리"
       android:textColor="@color/black"
-      android:textSize="20sp" />
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline" />
 
   <TextView
       android:id="@+id/read_pay"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentStart="true"
-      android:layout_alignParentTop="true"
-      android:layout_marginStart="48dp"
-      android:layout_marginTop="179dp"
+      android:layout_marginBottom="68dp"
       android:text="결제방식"
       android:textColor="@color/black"
-      android:textSize="20sp" />
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline" />
 
   <TextView
       android:id="@+id/read_store"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentStart="true"
-      android:layout_alignParentTop="true"
-      android:layout_marginStart="48dp"
-      android:layout_marginTop="139dp"
+      android:layout_marginBottom="112dp"
       android:text="가게이름"
       android:textColor="@color/black"
-      android:textSize="20sp" />
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline" />
 
   <TextView
       android:id="@+id/read_phone"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentStart="true"
-      android:layout_alignParentTop="true"
-      android:layout_marginStart="48dp"
-      android:layout_marginTop="99dp"
+      android:layout_marginBottom="156dp"
       android:text="연락처"
       android:textColor="@color/black"
-      android:textSize="20sp" />
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline" />
 
   <TextView
       android:id="@+id/read_name"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_alignParentStart="true"
-      android:layout_alignParentTop="true"
-      android:layout_marginStart="48dp"
-      android:layout_marginTop="59dp"
+      android:layout_marginBottom="200dp"
       android:text="이름"
       android:textColor="@color/black"
-      android:textSize="20sp" />
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline" />
 
   <Button
       android:id="@+id/fab2"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
 
-      android:layout_alignParentTop="true"
-      android:layout_alignParentEnd="true"
-      android:layout_centerVertical="true"
-      android:layout_marginStart="0dp"
-      android:layout_marginTop="323dp"
-      android:layout_marginEnd="36dp"
       android:contentDescription="수정 버튼"
-      android:text="수정하기" />
+      android:text="입력하기"
+      app:layout_constraintStart_toStartOf="@+id/guideline3"
+      app:layout_constraintTop_toTopOf="@+id/guideline8" />
 
   <ImageButton
       android:id="@+id/note_button"
       android:layout_width="86dp"
       android:layout_height="64dp"
-      android:layout_alignParentStart="true"
-      android:layout_alignParentBottom="true"
-      android:layout_marginStart="32dp"
-      android:layout_marginBottom="106dp"
       android:backgroundTint="@android:color/black"
       android:contentDescription="하고 싶은 설명"
       android:padding="0sp"
       android:scaleType="centerCrop"
-      android:src="@drawable/baseline_note" />
+      android:src="@drawable/baseline_note"
+      app:layout_constraintStart_toStartOf="@+id/guideline"
+      app:layout_constraintTop_toTopOf="@+id/guideline4" />
 
   <ImageButton
       android:id="@+id/menu_button"
       android:layout_width="86dp"
       android:layout_height="64dp"
-      android:layout_below="@id/textView"
-      android:layout_alignParentEnd="true"
-      android:layout_centerHorizontal="true"
-      android:layout_marginTop="470dp"
-      android:layout_marginEnd="171dp"
       android:contentDescription="하고 싶은 설명"
       android:onClick="goToMenuActivity"
       android:padding="0sp"
       android:scaleType="centerCrop"
-      android:src="@drawable/baseline_restaurant_menu" />
+      android:src="@drawable/baseline_restaurant_menu"
+      app:layout_constraintStart_toStartOf="@+id/guideline2"
+      app:layout_constraintTop_toTopOf="@+id/guideline4" />
 
   <ImageButton
       android:id="@+id/gps_button"
       android:layout_width="86dp"
       android:layout_height="64dp"
-      android:layout_below="@id/textView"
-      android:layout_alignParentEnd="true"
-      android:layout_centerHorizontal="true"
-      android:layout_marginTop="454dp"
-      android:layout_marginEnd="44dp"
       android:contentDescription="하고 싶은 설명"
       android:onClick="goToMenuActivity"
       android:padding="0sp"
       android:scaleType="centerCrop"
-      android:src="@drawable/baseline_gps" />
+      android:src="@drawable/baseline_gps"
+      app:layout_constraintStart_toStartOf="@+id/guideline3"
+      app:layout_constraintTop_toTopOf="@+id/guideline4" />
+
+  <androidx.constraintlayout.widget.Barrier
+      android:id="@+id/barrier2"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:barrierDirection="left" />
+
+  <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_end="365dp" />
+
+  <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline2"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_begin="162dp" />
+
+  <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline3"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_begin="287dp" />
+
+  <androidx.constraintlayout.widget.Barrier
+      android:id="@+id/barrier3"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:barrierDirection="left" />
+
+  <androidx.constraintlayout.widget.Group
+      android:id="@+id/group"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
+
+  <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline4"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_end="186dp" />
+
+  <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline8"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_begin="305dp" />
+  <!-- signupCeoname, signupPhonenum, signupStorename, signupHtpay, signupCategory-->
+
+  <TextView
+      android:id="@+id/signupceoname"
+      android:layout_width="150dp"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="200dp"
+      android:text="이름"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+  <TextView
+      android:id="@+id/signupphonenum"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="156dp"
+      android:text="연락처"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+  <TextView
+      android:id="@+id/signupstorename"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="112dp"
+      android:text="가게이름"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+  <TextView
+      android:id="@+id/signuphtpay"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="68dp"
+      android:text="결제방식"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+  <TextView
+      android:id="@+id/signupcategory"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="20dp"
+      android:text="카테고리"
+      android:textSize="20sp"
+      app:layout_constraintBottom_toTopOf="@+id/guideline8"
+      app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+  <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline7"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_begin="52dp" />
+
+  <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline13"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_begin="360dp" />
 
 
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
