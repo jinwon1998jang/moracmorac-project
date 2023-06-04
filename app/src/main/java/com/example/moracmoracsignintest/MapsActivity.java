@@ -44,6 +44,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -68,8 +69,32 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // 예시: AlertDialog를 사용하여 마커 정보를 표시
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsActivity.this);
 
-                dialogBuilder.setMessage("푸드트럭 이름: " + marker.getTitle() +"\n푸드트럭 설명: " + marker.getSnippet() + "\n" +
-                        "영업시간: " + marker.getTag());
+                dialogBuilder.setTitle("푸드트럭 정보");
+
+                StringBuilder dialogMessage = new StringBuilder();
+                dialogMessage.append("푸드트럭 이름: ").append(marker.getTitle()).append("\n");
+                dialogMessage.append("푸드트럭 설명: ").append(marker.getSnippet()).append("\n");
+
+                Object tag = marker.getTag();
+                if (tag instanceof HashMap) {
+                    HashMap<String, String> openingHours = (HashMap<String, String>) tag;
+                    StringBuilder openingHoursText = new StringBuilder("영업 시간:\n");
+                    String[] daysOfWeek = {"월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"};
+                    boolean hasOpeningHours = false;
+                    for (String day : daysOfWeek) {
+                        if (openingHours.containsKey(day) && !openingHours.get(day).isEmpty()) {
+                            String hours = openingHours.get(day);
+                            openingHoursText.append(day).append(": ").append(hours).append("\n");
+                            hasOpeningHours = true;
+                        }
+                    }
+                    if (hasOpeningHours) {
+                        dialogMessage.append(openingHoursText.toString());
+                    }
+                }
+
+                dialogBuilder.setMessage(dialogMessage.toString());
+
                 dialogBuilder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -86,9 +111,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
                 dialogBuilder.show();
 
-
                 return true;
             }
+
+
+
         });
 
         // Check for permission

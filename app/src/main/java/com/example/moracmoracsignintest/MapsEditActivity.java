@@ -40,6 +40,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -154,55 +155,54 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
         dialogBuilder.setView(layout);
 
         dialogBuilder.setPositiveButton("등록", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String name = nameEditText.getText().toString();
-                String content = contentEditText.getText().toString();
-                String mondayHours = mondayEditText.getText().toString();
-                String tuesdayHours = tuesdayEditText.getText().toString();
-                String wendnesdayHours = wendnesdayEditText.getText().toString();
-                String thursdayHours = thursdayEditText.getText().toString();
-                String fridayHours = fridayEditText.getText().toString();
-                String saturdayHours = saturdayEditText.getText().toString();
-                String sundayHours = sundayEditText.getText().toString();
-                // 추가적인 요일 영업 시간 값 가져오기
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String name = nameEditText.getText().toString();
+                        String content = contentEditText.getText().toString();
+                        String mondayHours = mondayEditText.getText().toString();
+                        String tuesdayHours = tuesdayEditText.getText().toString();
+                        String wendnesdayHours = wendnesdayEditText.getText().toString();
+                        String thursdayHours = thursdayEditText.getText().toString();
+                        String fridayHours = fridayEditText.getText().toString();
+                        String saturdayHours = saturdayEditText.getText().toString();
+                        String sundayHours = sundayEditText.getText().toString();
+                        // 추가적인 요일 영업 시간 값 가져오기
 
-                HashMap<String, String> openingHours = new HashMap<>();
-                openingHours.put("월요일", mondayHours);
-                openingHours.put("화요일", tuesdayHours);
-                openingHours.put("수요일", wendnesdayHours);
-                openingHours.put("목요일", thursdayHours);
-                openingHours.put("금요일", fridayHours);
-                openingHours.put("토요일", saturdayHours);
-                openingHours.put("일요일", sundayHours);
+                        HashMap<String, String> openingHours = new HashMap<>();
+                        openingHours.put("월요일", mondayHours);
+                        openingHours.put("화요일", tuesdayHours);
+                        openingHours.put("수요일", wendnesdayHours);
+                        openingHours.put("목요일", thursdayHours);
+                        openingHours.put("금요일", fridayHours);
+                        openingHours.put("토요일", saturdayHours);
+                        openingHours.put("일요일", sundayHours);
 
-                Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
+                        Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
 
-                marker.setTitle(name);
-                marker.setSnippet(content);
+                        marker.setTitle(name);
+                        marker.setSnippet(content);
 
-                // Extract additional data from the marker as needed
+                        // Extract additional data from the marker as needed
 
-                MarkerData markerData = new MarkerData(UUID.randomUUID().toString(), name, content, openingHours, latLng.latitude, latLng.longitude);
-                saveMarkerData(marker);
+                        MarkerData markerData = new MarkerData(UUID.randomUUID().toString(), name, content, openingHours, latLng.latitude, latLng.longitude);
 
-                // Save the MarkerData to Firebase Realtime Database
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
-                databaseReference.child(markerData.getId()).setValue(markerData)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(MapsEditActivity.this, "마커가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(MapsEditActivity.this, "마커 저장 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
-        });
+                        // Save the MarkerData to Firebase Realtime Database
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
+                        databaseReference.child(markerData.getId()).setValue(markerData)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Toast.makeText(MapsEditActivity.this, "마커가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(MapsEditActivity.this, "마커 저장 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                });
 
         dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
             @Override
@@ -215,22 +215,12 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
     }
 // ...
 
-    private void saveMarkerData(Marker marker) {
+    private void saveMarkerData(Marker marker, HashMap<String, String> openingHours) {
         String name = marker.getTitle();
         String content = marker.getSnippet();
         LatLng location = marker.getPosition();
 
         // Extract additional data from the marker as needed
-
-        // Create a HashMap for opening hours
-        HashMap<String, String> openingHours = new HashMap<>();
-        openingHours.put("월요일", "10:00 - 18:00");
-        openingHours.put("화요일", "10:00 - 18:00");
-        openingHours.put("수요일", "10:00 - 18:00");
-        openingHours.put("목요일", "10:00 - 18:00");
-        openingHours.put("금요일", "10:00 - 18:00");
-        openingHours.put("토요일", "10:00 - 18:00");
-        openingHours.put("일요일", "10:00 - 18:00");
 
         // Create a MarkerData object
         MarkerData markerData = new MarkerData(UUID.randomUUID().toString(), name, content, openingHours, location.latitude, location.longitude);
@@ -254,52 +244,58 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
 
 
 
+
 // ...
 
-    // ...
-    private void showEditDialog(Marker marker) {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsEditActivity.this);
-        dialogBuilder.setTitle("마커 수정");
+// ...
+private void showEditDialog(final MarkerData markerData) {
+    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsEditActivity.this);
+    dialogBuilder.setTitle("마커 수정");
 
-        LinearLayout layout = new LinearLayout(MapsEditActivity.this);
-        layout.setOrientation(LinearLayout.VERTICAL);
+    LinearLayout layout = new LinearLayout(MapsEditActivity.this);
+    layout.setOrientation(LinearLayout.VERTICAL);
 
-        final EditText nameEditText = new EditText(MapsEditActivity.this);
-        nameEditText.setHint("푸드트럭명");
-        layout.addView(nameEditText);
+    final EditText nameEditText = new EditText(MapsEditActivity.this);
+    nameEditText.setHint("푸드트럭명");
+    layout.addView(nameEditText);
 
-        final EditText contentEditText = new EditText(MapsEditActivity.this);
-        contentEditText.setHint("푸드트럭 설명");
-        layout.addView(contentEditText);
+    final EditText contentEditText = new EditText(MapsEditActivity.this);
+    contentEditText.setHint("푸드트럭 설명");
+    layout.addView(contentEditText);
 
-        // Add additional EditText fields for opening hours
+    final EditText openingHoursEditText = new EditText(MapsEditActivity.this);
+    openingHoursEditText.setHint("영업 시간");
+    layout.addView(openingHoursEditText);
 
-        dialogBuilder.setView(layout);
+    dialogBuilder.setView(layout);
 
-        dialogBuilder.setPositiveButton("수정", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String name = nameEditText.getText().toString();
-                String content = contentEditText.getText().toString();
+    dialogBuilder.setPositiveButton("수정", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            String name = nameEditText.getText().toString();
+            String content = contentEditText.getText().toString();
+            String openingHours = openingHoursEditText.getText().toString();
 
-                // Update marker information
-                marker.setTitle(name);
-                marker.setSnippet(content);
+            // Update marker data
+            markerData.setTitle(name);
+            markerData.setContent(content);
+            markerData.getOpeningHours().put("default", openingHours);
 
-                // Save the updated marker information to Firebase Realtime Database
-                saveMarkerData(marker);
-            }
-        });
+            // Save the updated marker data to Firebase Realtime Database
 
-        dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        }
+    });
 
-        dialogBuilder.show();
-    }
+    dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            dialog.dismiss();
+        }
+    });
+
+    dialogBuilder.show();
+}
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -362,7 +358,7 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
                     dialogBuilder.setNeutralButton("수정", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            showEditDialog(marker);
+                            showEditDialog(markerData);
                         }
                     });
                     // Add delete button
@@ -415,15 +411,33 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
                     Double longitude = markerSnapshot.child("longitude").getValue(Double.class);
                     String title = markerSnapshot.child("title").getValue(String.class);
                     String content = markerSnapshot.child("content").getValue(String.class);
-                    String hours = markerSnapshot.child("hours").getValue(String.class);
+                    HashMap<String, String> openingHours = markerSnapshot.child("openingHours").getValue(new GenericTypeIndicator<HashMap<String, String>>() {});
+
                     String markerUserId = markerSnapshot.child("userId").getValue(String.class);
 
                     if (latitude != null && longitude != null) {
                         LatLng location = new LatLng(latitude, longitude);
+
+                        StringBuilder openingHoursText = new StringBuilder();
+                        String[] daysOfWeek = {"월요일", "화요일", "수요일", "목요일", "금요일", "토요일", "일요일"};
+                        if (openingHours != null && !openingHours.isEmpty()) {
+                            for (String day : daysOfWeek) {
+                                if (openingHours.containsKey(day)) {
+                                    String hours = openingHours.get(day);
+                                    openingHoursText.append(day).append(": ").append(hours).append("\n");
+                                }
+                            }
+                        }
+
+                        String snippet = content;
+                        if (openingHoursText.length() > 0) {
+                            snippet += "\n\n영업 시간:\n" + openingHoursText.toString();
+                        }
+
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(location)
                                 .title(title)
-                                .snippet(content + "\n영업 시간: " + hours));
+                                .snippet(snippet));
 
                         // Set the user ID as the tag for the marker
                         marker.setTag(markerUserId);
@@ -431,6 +445,8 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
                         Log.e(TAG, "Latitude 또는 longitude가 null입니다.");
                     }
                 }
+
+
 
             }
 
