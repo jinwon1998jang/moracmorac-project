@@ -155,54 +155,64 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
         dialogBuilder.setView(layout);
 
         dialogBuilder.setPositiveButton("등록", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String name = nameEditText.getText().toString();
-                        String content = contentEditText.getText().toString();
-                        String mondayHours = mondayEditText.getText().toString();
-                        String tuesdayHours = tuesdayEditText.getText().toString();
-                        String wendnesdayHours = wendnesdayEditText.getText().toString();
-                        String thursdayHours = thursdayEditText.getText().toString();
-                        String fridayHours = fridayEditText.getText().toString();
-                        String saturdayHours = saturdayEditText.getText().toString();
-                        String sundayHours = sundayEditText.getText().toString();
-                        // 추가적인 요일 영업 시간 값 가져오기
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String name = nameEditText.getText().toString();
+                String content = contentEditText.getText().toString();
+                String mondayHours = mondayEditText.getText().toString();
+                String tuesdayHours = tuesdayEditText.getText().toString();
+                String wendnesdayHours = wendnesdayEditText.getText().toString();
+                String thursdayHours = thursdayEditText.getText().toString();
+                String fridayHours = fridayEditText.getText().toString();
+                String saturdayHours = saturdayEditText.getText().toString();
+                String sundayHours = sundayEditText.getText().toString();
+                // 추가적인 요일 영업 시간 값 가져오기
 
-                        HashMap<String, String> openingHours = new HashMap<>();
-                        openingHours.put("월요일", mondayHours);
-                        openingHours.put("화요일", tuesdayHours);
-                        openingHours.put("수요일", wendnesdayHours);
-                        openingHours.put("목요일", thursdayHours);
-                        openingHours.put("금요일", fridayHours);
-                        openingHours.put("토요일", saturdayHours);
-                        openingHours.put("일요일", sundayHours);
+                HashMap<String, String> openingHours = new HashMap<>();
+                openingHours.put("월요일", mondayHours);
+                openingHours.put("화요일", tuesdayHours);
+                openingHours.put("수요일", wendnesdayHours);
+                openingHours.put("목요일", thursdayHours);
+                openingHours.put("금요일", fridayHours);
+                openingHours.put("토요일", saturdayHours);
+                openingHours.put("일요일", sundayHours);
 
-                        Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
+                Marker marker = mMap.addMarker(new MarkerOptions().position(latLng));
 
-                        marker.setTitle(name);
-                        marker.setSnippet(content);
+                marker.setTitle(name);
+                marker.setSnippet(content);
 
-                        // Extract additional data from the marker as needed
+                // Extract additional data from the marker as needed
 
-                        MarkerData markerData = new MarkerData(UUID.randomUUID().toString(), name, content, openingHours, latLng.latitude, latLng.longitude);
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    String userEmail = user.getEmail();
+                    String markerKey = userEmail.replace(".", "_");
 
-                        // Save the MarkerData to Firebase Realtime Database
-                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
-                        databaseReference.child(markerData.getId()).setValue(markerData)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Toast.makeText(MapsEditActivity.this, "마커가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(MapsEditActivity.this, "마커 저장 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                });
+                    MarkerData markerData = new MarkerData(markerKey, name, content, openingHours, latLng.latitude, latLng.longitude);
+
+                    // Save the MarkerData to Firebase Realtime Database
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
+                    databaseReference.child(markerData.getId()).setValue(markerData)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(MapsEditActivity.this, "마커가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(MapsEditActivity.this, "마커 저장 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } else {
+                    Toast.makeText(MapsEditActivity.this, "사용자가 로그인되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
 
         dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
             @Override
@@ -215,39 +225,6 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
     }
 // ...
 
-    private void saveMarkerData(Marker marker, HashMap<String, String> openingHours) {
-        String name = marker.getTitle();
-        String content = marker.getSnippet();
-        LatLng location = marker.getPosition();
-
-        // Extract additional data from the marker as needed
-
-        // Create a MarkerData object
-        MarkerData markerData = new MarkerData(UUID.randomUUID().toString(), name, content, openingHours, location.latitude, location.longitude);
-
-        // Save the MarkerData to Firebase Realtime Database
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
-        databaseReference.child(markerData.getId()).setValue(markerData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(MapsEditActivity.this, "마커가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(MapsEditActivity.this, "마커 저장 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-
-
-
-// ...
-
-// ...
 private void showEditDialog(final MarkerData markerData) {
     AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsEditActivity.this);
     dialogBuilder.setTitle("마커 수정");
@@ -373,21 +350,31 @@ private void showEditDialog(final MarkerData markerData) {
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 // Remove the marker if found
                                 for (DataSnapshot markerSnapshot : dataSnapshot.getChildren()) {
-                                    markerSnapshot.getRef().removeValue()
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    // Marker removed successfully
-                                                    Log.d(TAG, "마커가 제거되었습니다");
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    // Failed to remove marker
-                                                    Log.e(TAG, "마커 제거에 실패했습니다: " + e.getMessage());
-                                                }
-                                            });
+                                    MarkerData markerData = markerSnapshot.getValue(MarkerData.class);
+                                    if (markerData != null) {
+                                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                        if (user != null && user.getEmail().equals(markerData.getId())) {
+                                            markerSnapshot.getRef().removeValue()
+                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                        @Override
+                                                        public void onSuccess(Void aVoid) {
+                                                            // Marker removed successfully
+                                                            Log.d(TAG, "마커가 제거되었습니다");
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(new OnFailureListener() {
+                                                        @Override
+                                                        public void onFailure(@NonNull Exception e) {
+                                                            // Failed to remove marker
+                                                            Log.e(TAG, "마커 제거에 실패했습니다: " + e.getMessage());
+                                                        }
+                                                    });
+                                            marker.remove();
+                                        } else {
+                                            // User does not have permission to delete the marker
+                                            Toast.makeText(MapsEditActivity.this, "마커를 삭제할 권한이 없습니다.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
                                 }
                             }
 
@@ -396,9 +383,6 @@ private void showEditDialog(final MarkerData markerData) {
                                 Log.e(TAG, "Firebase Realtime Database에서 마커 데이터를 읽는 데 실패했습니다: " + databaseError.getMessage());
                             }
                         });
-
-                        // Remove the marker from the map
-                        marker.remove();
                     });
 
                     dialogBuilder.show();
