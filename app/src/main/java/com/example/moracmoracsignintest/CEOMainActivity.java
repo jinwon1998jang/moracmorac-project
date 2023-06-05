@@ -29,6 +29,7 @@ public class CEOMainActivity extends AppCompatActivity {
     ImageButton note;
     ImageButton menuBtn;
     ImageButton gps;
+    ImageButton menu_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +73,17 @@ public class CEOMainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        menu_button = findViewById(R.id.menu_button);
+
+        menu_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CEOMainActivity.this, menuActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     void showMenu() {
