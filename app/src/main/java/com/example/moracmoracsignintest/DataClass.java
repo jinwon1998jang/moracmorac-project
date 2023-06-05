@@ -37,5 +37,7 @@ public class DataClass {
         this.dataImage = dataImage;
     }
 
-    //public void DataClass() {}
+    public DataClass() {
+
+    }
 }

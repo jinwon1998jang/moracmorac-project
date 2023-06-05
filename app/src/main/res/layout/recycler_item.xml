@@ -14,52 +14,53 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="130dp">
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:layout_width="60dp"
-            android:layout_height="60dp"
             android:id="@+id/recImage"
-            android:src="@drawable/uploadimg"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginStart="20dp"
             android:padding="8dp"
             android:scaleType="centerCrop"
-            app:shapeAppearanceOverlay="@style/roundedImageViewRounded"/>
+            android:src="@drawable/uploadimg"
+             />
 
         <TextView
+            android:id="@+id/recTitle"
             android:layout_width="120dp"
             android:layout_height="30dp"
-            android:id="@+id/recTitle"
+            android:layout_marginStart="20sp"
+            android:layout_marginTop="20dp"
+            android:layout_toEndOf="@id/recImage"
             android:text="Title"
             android:textColor="@color/lavender"
-            android:textSize="20sp"
-            android:layout_marginTop="20dp"
-            android:layout_marginStart="20sp"
-            android:layout_toEndOf="@id/recImage"/>
+            android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/recLang"
             android:layout_width="80dp"
             android:layout_height="30dp"
-            android:id="@+id/recLang"
-            android:text="Language"
-            android:textColor="@color/lavender"
-            android:textSize="16sp"
-            android:textAlignment="center"
-            android:layout_toEndOf="@id/recTitle"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="20dp"
-            android:layout_marginStart="90dp" />
+            android:layout_toEndOf="@id/recTitle"
+            android:text="Language"
+            android:textAlignment="center"
+            android:textColor="@color/lavender"
+            android:textSize="16sp" />
 
         <TextView
-            android:layout_width="140dp"
-            android:layout_height="12dp"
             android:id="@+id/recDesc"
+            android:layout_width="140dp"
+            android:layout_height="60dp"
+            android:layout_below="@id/recTitle"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="7dp"
+            android:layout_toEndOf="@id/recImage"
+            android:maxLines="0"
             android:text="Description"
             android:textColor="@color/lavender"
-            android:textSize="8sp"
-            android:layout_toEndOf="@id/recImage"
-            android:layout_below="@id/recTitle"
-            android:maxLines="0"
-            android:layout_marginStart="5dp" />
+            android:textSize="8sp" />
 
     </RelativeLayout>
 

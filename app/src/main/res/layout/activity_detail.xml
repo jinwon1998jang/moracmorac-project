@@ -28,16 +28,7 @@
         android:src="@drawable/uploadimg"
         android:scaleType="fitXY"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:padding="20dp"
-        android:text="Language"
-        android:layout_gravity="center"
-        android:id="@+id/detailLang"
-        android:textSize="18sp"
-        android:textColor="@color/lavender"/>
+
 
     <TextView
         android:layout_width="match_parent"
@@ -47,6 +38,17 @@
         android:text="Description"
         android:layout_gravity="center"
         android:id="@+id/detailDesc"
+        android:textSize="18sp"
+        android:textColor="@color/lavender"/>
+
+    <!--<TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="20dp"
+        android:text="Language"
+        android:layout_gravity="center"
+        android:id="@+id/detailLang"
         android:textSize="18sp"
         android:textColor="@color/lavender"/>
 
@@ -89,5 +91,5 @@
         </com.github.clans.fab.FloatingActionMenu>
 
     </RelativeLayout>
-
+-->
 </LinearLayout>
