@@ -68,9 +68,11 @@ public class CEOUploadActivity extends AppCompatActivity {
                     //String childPath = id + "/" + storename;
 
                     //데이터 객체 생성
+
+                    id = id.replace(".com", "_com");
                     HelperClass helperClass = new HelperClass(ceoname, phonenum, storename, htpay, category, id);
                     //데이터 업로드
-                    reference.child(storename).setValue(helperClass);
+                    reference.child(id).setValue(helperClass);
 
 
                     Toast.makeText(CEOUploadActivity.this, "저장 성공!", Toast.LENGTH_SHORT).show();

@@ -48,8 +48,8 @@ public class CEOMainActivity extends AppCompatActivity {
         signupHtpay = findViewById(R.id.signuphtpay);
         signupCategory = findViewById(R.id.signupcategory);
 
-        //showData();
-        showDataorigin();
+        showData();
+        //showDataorigin();
         //showData2();
         menuBtn = findViewById(R.id.menu_btn);
         menuBtn.setOnClickListener((v) -> showMenu());
@@ -120,13 +120,14 @@ public class CEOMainActivity extends AppCompatActivity {
         // 현재 로그인된 사용자의 ID 가져오기
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            String userID = user.getUid();
+            String userID = user.getEmail();
             // userId를 사용하여 필요한 작업 수행
-            String confirmid = userID;
+            String email = userID;
 
+            email = email.replace(".com", "_com");
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("store data");
 
-            Query query = reference.orderByChild("store data/id").equalTo(confirmid);
+            Query query = reference.orderByChild("id").equalTo(email);
 
 
             query.addValueEventListener(new ValueEventListener() {
@@ -134,11 +135,11 @@ public class CEOMainActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         // 데이터를 읽어오는 로직을 작성합니다.
-                        String ceoName = snapshot.child("id/ceoname").getValue(String.class);
-                        String phoneNum = snapshot.child("id/phonenum").getValue(String.class);
-                        String storeName = snapshot.child("id/storename").getValue(String.class);
-                        String htPay = snapshot.child("id/htpay").getValue(String.class);
-                        String cateGory = snapshot.child("id/category").getValue(String.class);
+                        String ceoName = snapshot.child("ceoname").getValue(String.class);
+                        String phoneNum = snapshot.child("phonenum").getValue(String.class);
+                        String storeName = snapshot.child("storename").getValue(String.class);
+                        String htPay = snapshot.child("htpay").getValue(String.class);
+                        String cateGory = snapshot.child("category").getValue(String.class);
 
                         // 읽어온 데이터를 활용하여 작업을 수행합니다.
                         signupCeoname.setText(ceoName);

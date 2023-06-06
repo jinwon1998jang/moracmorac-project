@@ -17,6 +17,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MoracmoracSignInTest">
         <activity
+            android:name=".StoreReviewListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".StoreReviewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FavoriteListActivity"
+            android:exported="false" />
+        <activity
             android:name=".UserNoteActivity"
             android:exported="false" />
         <activity

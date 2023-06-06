@@ -99,8 +99,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 dialogBuilder.setPositiveButton("자세히 보기", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(MapsActivity.this, DetailActivity.class);
+                        Intent intent = new Intent(MapsActivity.this, UserMenuActivity.class);
                         // 여기에 마커 정보를 전달하고, DetailActivity에서 사용할 수 있도록 처리
+                        //intent.putExtra("id", marker.getSnippet());
                         startActivity(intent);
                     }
                 });

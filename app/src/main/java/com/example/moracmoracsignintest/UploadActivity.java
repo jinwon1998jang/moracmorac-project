@@ -131,6 +131,7 @@ public class UploadActivity extends AppCompatActivity {
             String desc = uploadDesc.getText().toString();
             String lang = uploadLang.getText().toString();
 
+
             DataClass dataClass = new DataClass(title, desc, lang, imageURL, id);
 
             //We are changing the child from title to currentDate,
@@ -138,7 +139,7 @@ public class UploadActivity extends AppCompatActivity {
 
             //String currentDate = DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
 
-            FirebaseDatabase.getInstance().getReference("Android Tutorials").child(title)
+            FirebaseDatabase.getInstance().getReference("Store Menu").child(title)
                     .setValue(dataClass).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

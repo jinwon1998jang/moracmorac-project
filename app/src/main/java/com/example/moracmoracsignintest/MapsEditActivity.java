@@ -302,7 +302,13 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
 
         dialogBuilder.show();
     }
-
+    private String getEmailPrefix(String email) {
+        int atIndex = email.indexOf("@");
+        if (atIndex != -1) {
+            return email.substring(0, atIndex);
+        }
+        return email;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -342,6 +348,7 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
 
                     // Get user ID
                     String markerUserId = (String) marker.getTag();
+
                     if (markerUserId != null && markerUserId.equals(currentUserId)) {
                         // Show additional information if the marker belongs to the current user
                         snippet += "\n등록자: " + markerUserId;
@@ -371,38 +378,41 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
                     // Add delete button
                     // When the delete button is clicked, remove the marker from Firebase Realtime Database
                     dialogBuilder.setNegativeButton("삭제", (dialog, which) -> {
-                        // Find the marker in the database and remove it
+                        // 데이터베이스에서 마커를 찾아 제거
                         String markerTitle = marker.getTitle();
                         Query markerQuery = databaseReference.orderByChild("title").equalTo(markerTitle);
 
                         markerQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                // Remove the marker if found
+                                // 마커가 있는 경우 제거
                                 for (DataSnapshot markerSnapshot : dataSnapshot.getChildren()) {
                                     MarkerData markerData = markerSnapshot.getValue(MarkerData.class);
                                     if (markerData != null) {
                                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                        if (user != null && user.getEmail().equals(markerData.getId())) {
+                                        if (user != null && getEmailPrefix(user.getEmail()).equals(getEmailPrefix(markerData.getId()))) {
                                             markerSnapshot.getRef().removeValue()
                                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                         @Override
                                                         public void onSuccess(Void aVoid) {
-                                                            // Marker removed successfully
+                                                            // 마커 제거 성공
                                                             Log.d(TAG, "마커가 제거되었습니다");
+                                                            marker.remove(); // 지도에서도 마커 제거
                                                         }
                                                     })
                                                     .addOnFailureListener(new OnFailureListener() {
                                                         @Override
                                                         public void onFailure(@NonNull Exception e) {
-                                                            // Failed to remove marker
+                                                            // 마커 제거 실패
                                                             Log.e(TAG, "마커 제거에 실패했습니다: " + e.getMessage());
                                                         }
                                                     });
-                                            marker.remove();
                                         } else {
-                                            // User does not have permission to delete the marker
+                                            // 사용자가 마커를 삭제할 권한이 없음
                                             Toast.makeText(MapsEditActivity.this, "마커를 삭제할 권한이 없습니다.", Toast.LENGTH_SHORT).show();
+                                            String markerUserId = markerSnapshot.child("userId").getValue(String.class);
+                                            Log.d(TAG, "Marker User ID: " + getEmailPrefix(markerData.getId()));
+                                            Log.d(TAG, "Current User Email: " + user.getEmail());
                                         }
                                     }
                                 }
@@ -414,6 +424,7 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
                             }
                         });
                     });
+
 
                     dialogBuilder.show();
 

@@ -6,7 +6,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +32,8 @@ public class UserMenuActivity extends AppCompatActivity {
     List<DataClass> dataList;
     MyAdapterUser adapter;
 
+    ImageButton review_btn;
+
     TextView userCeoname, userPhonenum, userStorename, userHtpay, userCategory;
 
     @Override
@@ -40,6 +46,17 @@ public class UserMenuActivity extends AppCompatActivity {
         userStorename = findViewById(R.id.userstorename);
         userHtpay = findViewById(R.id.userhtpay);
         userCategory = findViewById(R.id.usercategory);
+        review_btn = findViewById(R.id.review_btn);
+
+        review_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(UserMenuActivity.this, StoreReviewListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
 
         showData();
 
@@ -59,7 +76,7 @@ public class UserMenuActivity extends AppCompatActivity {
         adapter = new MyAdapterUser(UserMenuActivity.this, dataList);
         recyclerView.setAdapter(adapter);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("Android Tutorials");
+        databaseReference = FirebaseDatabase.getInstance().getReference("Store Menu");
         dialog.show();
 
         eventListener = databaseReference.addValueEventListener(new ValueEventListener() {

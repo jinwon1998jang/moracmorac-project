@@ -28,7 +28,7 @@
 
         <TextView
             android:id="@+id/recTitle"
-            android:layout_width="120dp"
+            android:layout_width="200dp"
             android:layout_height="30dp"
             android:layout_marginStart="20sp"
             android:layout_marginTop="20dp"
@@ -39,11 +39,12 @@
 
         <TextView
             android:id="@+id/recLang"
-            android:layout_width="80dp"
+            android:layout_width="120dp"
             android:layout_height="30dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="20dp"
-            android:layout_toEndOf="@id/recTitle"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="161dp"
+            android:layout_marginTop="69dp"
             android:text="Language"
             android:textAlignment="center"
             android:textColor="@color/lavender"
@@ -51,11 +52,11 @@
 
         <TextView
             android:id="@+id/recDesc"
-            android:layout_width="140dp"
-            android:layout_height="60dp"
+            android:layout_width="81dp"
+            android:layout_height="23dp"
             android:layout_below="@id/recTitle"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="7dp"
+            android:layout_marginStart="167dp"
+            android:layout_marginTop="59dp"
             android:layout_toEndOf="@id/recImage"
             android:maxLines="0"
             android:text="Description"
