@@ -24,6 +24,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -117,31 +119,42 @@ public class UploadActivity extends AppCompatActivity {
 
     public void uploadData(){
 
-        String title = uploadTopic.getText().toString();
-        String desc = uploadDesc.getText().toString();
-        String lang = uploadLang.getText().toString();
 
-        DataClass dataClass = new DataClass(title, desc, lang, imageURL);
+        //파이어베이스 인증 추가함
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userID = user.getEmail();
+            // userId를 사용하여 필요한 작업 수행
+            String id = userID;
 
-        //We are changing the child from title to currentDate,
-        // because we will be updating title as well and it may affect child value.
+            String title = uploadTopic.getText().toString();
+            String desc = uploadDesc.getText().toString();
+            String lang = uploadLang.getText().toString();
 
-        //String currentDate = DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+            DataClass dataClass = new DataClass(title, desc, lang, imageURL, id);
 
-        FirebaseDatabase.getInstance().getReference("Android Tutorials").child(title)
-                .setValue(dataClass).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()){
-                            Toast.makeText(UploadActivity.this, "Saved", Toast.LENGTH_SHORT).show();
-                            finish();
+            //We are changing the child from title to currentDate,
+            // because we will be updating title as well and it may affect child value.
+
+            //String currentDate = DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+
+            FirebaseDatabase.getInstance().getReference("Android Tutorials").child(title)
+                    .setValue(dataClass).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()){
+                                Toast.makeText(UploadActivity.this, "Saved", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
                         }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(UploadActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(UploadActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+
+
     }
 }

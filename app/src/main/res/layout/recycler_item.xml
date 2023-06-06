@@ -35,7 +35,7 @@
             android:layout_toEndOf="@id/recImage"
             android:text="Title"
             android:textColor="@color/lavender"
-            android:textSize="20sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/recLang"
@@ -47,7 +47,7 @@
             android:text="Language"
             android:textAlignment="center"
             android:textColor="@color/lavender"
-            android:textSize="16sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/recDesc"

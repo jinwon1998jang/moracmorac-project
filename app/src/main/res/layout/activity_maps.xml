@@ -16,7 +16,7 @@
         android:id="@+id/add_marker_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="푸드트럭의 위치를 선택해주세요"
+        android:text="모락모락"
         android:background="@drawable/orange_border"
 
         android:layout_alignParentBottom="true"
@@ -29,7 +29,8 @@
         android:layout_width="80dp"
         android:layout_height="50dp"
         android:layout_below="@id/add_marker_button"
-        android:layout_marginTop="-529dp"
+        android:layout_marginTop="-1000dp"
+        android:layout_marginStart="10dp"
         android:background="@drawable/orange_border"
         android:text="전체"
         />
@@ -39,7 +40,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_below="@id/add_marker_button"
-        android:layout_marginTop="-587dp"
+        android:layout_marginTop="-1050dp"
+        android:layout_marginStart="10dp"
         android:background="@drawable/orange_border"
 
         app:icon="@drawable/ic_search" />

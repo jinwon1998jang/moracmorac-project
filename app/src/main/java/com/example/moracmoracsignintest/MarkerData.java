@@ -10,6 +10,7 @@ public class MarkerData {
     private double latitude;
     private double longitude;
 
+    private String email; // 마커 등록자의 이메일 정보
     public MarkerData() {
         // Default constructor required for Firebase
     }
@@ -53,5 +54,12 @@ public class MarkerData {
 
     public double getLongitude() {
         return longitude;
+    }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

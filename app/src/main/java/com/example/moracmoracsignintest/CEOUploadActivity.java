@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,22 +47,38 @@ public class CEOUploadActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                // users = store data
-                database = FirebaseDatabase.getInstance();
-                reference = database.getReference("store data");
+                // 현재 로그인된 사용자의 ID 가져오기
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    String userID = user.getEmail();
+                    // userId를 사용하여 필요한 작업 수행
+                    String id = userID;
 
-                String ceoname = signupCeoname.getText().toString();
-                String phonenum = signupPhonenum.getText().toString();
-                String storename = signupStorename.getText().toString();
-                String htpay = signupHtpay.getText().toString();
-                String category = signupCategory.getText().toString();
+                    String ceoname = signupCeoname.getText().toString();
+                    String phonenum = signupPhonenum.getText().toString();
+                    String storename = signupStorename.getText().toString();
+                    String htpay = signupHtpay.getText().toString();
+                    String category = signupCategory.getText().toString();
 
-                HelperClass helperClass = new HelperClass(ceoname, phonenum, storename, htpay, category);
-                reference.child(storename).setValue(helperClass);
+                    // users = store data 데이터베이스 레퍼런스 설정
+                    database = FirebaseDatabase.getInstance();
+                    reference = database.getReference("store data");
 
-                Toast.makeText(CEOUploadActivity.this, "저장 성공!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(CEOUploadActivity.this, CEOMainActivity.class);
-                startActivity(intent);
+                    //하위 경로
+                    //String childPath = id + "/" + storename;
+
+                    //데이터 객체 생성
+                    HelperClass helperClass = new HelperClass(ceoname, phonenum, storename, htpay, category, id);
+                    //데이터 업로드
+                    reference.child(storename).setValue(helperClass);
+
+
+                    Toast.makeText(CEOUploadActivity.this, "저장 성공!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(CEOUploadActivity.this, CEOMainActivity.class);
+                    startActivity(intent);
+                }
+
+
 
             }
         });

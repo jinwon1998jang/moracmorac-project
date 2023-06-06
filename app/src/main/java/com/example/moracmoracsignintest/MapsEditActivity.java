@@ -48,7 +48,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
-    private static final String TAG = MapsEditActivity.class.getSimpleName();
+    static final String TAG = MapsEditActivity.class.getSimpleName();
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     private GoogleMap mMap;
@@ -191,28 +191,59 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
 
                     MarkerData markerData = new MarkerData(markerKey, name, content, openingHours, latLng.latitude, latLng.longitude);
 
-                    // Save the MarkerData to Firebase Realtime Database
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
-                    databaseReference.child(markerData.getId()).setValue(markerData)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Toast.makeText(MapsEditActivity.this, "마커가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(MapsEditActivity.this, "마커 저장 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                    // Calculate the distance between the clicked location and the current location
+                    LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    if (ContextCompat.checkSelfPermission(MapsEditActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(MapsEditActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
+                    Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                    if (lastKnownLocation != null) {
+                        float[] distance = new float[1];
+                        Location.distanceBetween(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(),
+                                markerData.getLatitude(), markerData.getLongitude(), distance);
+
+                        // Check if the distance is within 5km (5000 meters)
+                        if (distance[0] <= 5000) {
+                            // Location is within the allowed range, proceed with marker creation
+
+                            // Save the MarkerData to Firebase Realtime Database
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("markers");
+                            databaseReference.child(markerData.getId()).setValue(markerData)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(MapsEditActivity.this, "마커가 성공적으로 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(MapsEditActivity.this, "마커 저장 중 오류가 발생했습니다: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        } else {
+                            // Location is outside the allowed range, show a notification to the user
+                            Toast.makeText(MapsEditActivity.this, "5km 이내에서만 마커를 생성할 수 있습니다.\n", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(MapsEditActivity.this, MapsEditActivity.class));
+                        }
+                    } else {
+                        // Current location not available, show a notification to the user
+                        Toast.makeText(MapsEditActivity.this, "현재 위치를 가져올 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(MapsEditActivity.this, "사용자가 로그인되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-
 
         dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
             @Override
@@ -223,55 +254,54 @@ public class MapsEditActivity extends AppCompatActivity implements OnMapReadyCal
 
         dialogBuilder.show();
     }
-// ...
 
-private void showEditDialog(final MarkerData markerData) {
-    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsEditActivity.this);
-    dialogBuilder.setTitle("마커 수정");
+    private void showEditDialog(final MarkerData markerData) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsEditActivity.this);
+        dialogBuilder.setTitle("마커 수정");
 
-    LinearLayout layout = new LinearLayout(MapsEditActivity.this);
-    layout.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout layout = new LinearLayout(MapsEditActivity.this);
+        layout.setOrientation(LinearLayout.VERTICAL);
 
-    final EditText nameEditText = new EditText(MapsEditActivity.this);
-    nameEditText.setHint("푸드트럭명");
-    layout.addView(nameEditText);
+        final EditText nameEditText = new EditText(MapsEditActivity.this);
+        nameEditText.setHint("푸드트럭명");
+        layout.addView(nameEditText);
 
-    final EditText contentEditText = new EditText(MapsEditActivity.this);
-    contentEditText.setHint("푸드트럭 설명");
-    layout.addView(contentEditText);
+        final EditText contentEditText = new EditText(MapsEditActivity.this);
+        contentEditText.setHint("푸드트럭 설명");
+        layout.addView(contentEditText);
 
-    final EditText openingHoursEditText = new EditText(MapsEditActivity.this);
-    openingHoursEditText.setHint("영업 시간");
-    layout.addView(openingHoursEditText);
+        final EditText openingHoursEditText = new EditText(MapsEditActivity.this);
+        openingHoursEditText.setHint("영업 시간");
+        layout.addView(openingHoursEditText);
 
-    dialogBuilder.setView(layout);
+        dialogBuilder.setView(layout);
 
-    dialogBuilder.setPositiveButton("수정", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            String name = nameEditText.getText().toString();
-            String content = contentEditText.getText().toString();
-            String openingHours = openingHoursEditText.getText().toString();
+//    dialogBuilder.setPositiveButton("수정", new DialogInterface.OnClickListener() {
+//        @Override
+//        public void onClick(DialogInterface dialog, int which) {
+//            String name = nameEditText.getText().toString();
+//            String content = contentEditText.getText().toString();
+//            String openingHours = openingHoursEditText.getText().toString();
+//
+//            // Update marker data
+//            markerData.setTitle(name);
+//            markerData.setContent(content);
+//            markerData.getOpeningHours().put("default", openingHours);
+//
+//            // Save the updated marker data to Firebase Realtime Database
+//
+//        }
+//    });
 
-            // Update marker data
-            markerData.setTitle(name);
-            markerData.setContent(content);
-            markerData.getOpeningHours().put("default", openingHours);
+        dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
 
-            // Save the updated marker data to Firebase Realtime Database
-
-        }
-    });
-
-    dialogBuilder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            dialog.dismiss();
-        }
-    });
-
-    dialogBuilder.show();
-}
+        dialogBuilder.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -332,12 +362,12 @@ private void showEditDialog(final MarkerData markerData) {
 
                     dialogBuilder.setMessage(snippet);
                     dialogBuilder.setPositiveButton("확인", null);
-                    dialogBuilder.setNeutralButton("수정", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            showEditDialog(markerData);
-                        }
-                    });
+//                    dialogBuilder.setNeutralButton("수정", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            showEditDialog(markerData);
+//                        }
+//                    });
                     // Add delete button
                     // When the delete button is clicked, remove the marker from Firebase Realtime Database
                     dialogBuilder.setNegativeButton("삭제", (dialog, which) -> {

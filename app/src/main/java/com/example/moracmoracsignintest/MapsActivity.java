@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -95,13 +96,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 dialogBuilder.setMessage(dialogMessage.toString());
 
-                dialogBuilder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                dialogBuilder.setNegativeButton("자세히 보기", new DialogInterface.OnClickListener() {
+                dialogBuilder.setPositiveButton("자세히 보기", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(MapsActivity.this, DetailActivity.class);
@@ -109,9 +104,48 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         startActivity(intent);
                     }
                 });
+
+                dialogBuilder.setNegativeButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                dialogBuilder.setNeutralButton("공지 보기", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MapsActivity.this, UserNoteActivity.class);
+                        // 마커 등록자의 이메일 정보를 ReviewActivity로 전달
+                        intent.putExtra("id", marker.getSnippet());
+                        startActivity(intent);
+                    }
+                });
+
+
+
+
+                dialogBuilder.setNegativeButton("길 안내", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        LatLng markerLocation = marker.getPosition();
+                        String label = marker.getTitle();
+                        String uriString = "google.navigation:q=" + markerLocation.latitude + "," + markerLocation.longitude + "&mode=d";
+                        Uri gmmIntentUri = Uri.parse(uriString);
+                        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                        mapIntent.setPackage("com.google.android.apps.maps");
+                        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+                            startActivity(mapIntent);
+                        } else {
+                            Toast.makeText(MapsActivity.this, "구글 지도 앱이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
                 dialogBuilder.show();
 
                 return true;
+
             }
 
 

@@ -8,6 +8,12 @@ public class DataClass {
     private String dataImage;
     private String key;
 
+    private String id;
+
+    public  String getId() {return id;}
+
+    public void setId(String id) {this.id = id;}
+
     public String getKey() {
         return key;
     }
@@ -32,11 +38,12 @@ public class DataClass {
         return dataImage;
     }
 
-    public DataClass(String dataTitle, String dataDesc, String dataLang, String dataImage) {
+    public DataClass(String dataTitle, String dataDesc, String dataLang, String dataImage, String id) {
         this.dataTitle = dataTitle;
         this.dataDesc = dataDesc;
         this.dataLang = dataLang;
         this.dataImage = dataImage;
+        this.id = id;
     }
 
     public DataClass() {
