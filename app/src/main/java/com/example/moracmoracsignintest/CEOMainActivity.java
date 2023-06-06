@@ -95,7 +95,7 @@ public class CEOMainActivity extends AppCompatActivity {
 
     void showMenu() {
         PopupMenu popupMenu = new PopupMenu(CEOMainActivity.this, menuBtn);
-        popupMenu.getMenu().add("Menu");
+        popupMenu.getMenu().add("사용자 맵");
         popupMenu.getMenu().add("Logout");
 
         popupMenu.show();
@@ -107,8 +107,8 @@ public class CEOMainActivity extends AppCompatActivity {
                     startActivity(new Intent(CEOMainActivity.this, LoginActivity.class));
                     finish();
                     return true;
-                } else if (menuItem.getTitle().equals("Menu")) {
-                    startActivity(new Intent(CEOMainActivity.this, menuActivity.class));
+                } else if (menuItem.getTitle().equals("사용자맵")) {
+                    startActivity(new Intent(CEOMainActivity.this, MapsActivity.class));
                     return true;
                 }
                 return false;

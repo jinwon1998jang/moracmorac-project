@@ -70,7 +70,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                         changeInProgress(false);
                         if(task.isSuccessful()){
                             //creating acc is done
-                            Utility.showToast(CreateAccountActivity.this,"Successfully create account,Check email to verify");
+                            Utility.showToast(CreateAccountActivity.this,"계정이 성공적으로 생성되었습니다.");
                             firebaseAuth.getCurrentUser().sendEmailVerification();
                             firebaseAuth.signOut();
                             finish();
@@ -100,7 +100,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         //validate the data that are input by user.
 
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            emailEditText.setError("Email is invalid");
+            emailEditText.setError("이메일이 존재하지 않습니다");
             return false;
         }
         if(password.length()<6){
@@ -108,7 +108,7 @@ public class CreateAccountActivity extends AppCompatActivity {
             return false;
         }
         if(!password.equals(confirmPassword)){
-            confirmPasswordEditText.setError("Password not matched");
+            confirmPasswordEditText.setError("패스워드가 일치하지 않습니다");
             return false;
         }
         return true;

@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(new Intent(LoginActivity.this, CEOMainActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(LoginActivity.this, "Email is not verified. Please verify your email.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "이메일 인증이 이루어지지 않았습니다.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     // Login failed
@@ -115,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(new Intent(LoginActivity.this, MapsActivity.class));
                         finish();
                     } else {
-                        Toast.makeText(LoginActivity.this, "Email is not verified. Please verify your email.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "이메일 인증이 이루어지지 않았습니다.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     // Login failed
@@ -138,11 +138,11 @@ public class LoginActivity extends AppCompatActivity {
     boolean validateData(String email, String password) {
         // Validate the data that are input by the user.
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailEditText.setError("Invalid email");
+            emailEditText.setError("존재하지않는 아이디입니다.");
             return false;
         }
         if (password.length() < 6) {
-            passwordEditText.setError("Invalid password length");
+            passwordEditText.setError("비밀번호가 일치하지않습니다.");
             return false;
         }
         return true;
