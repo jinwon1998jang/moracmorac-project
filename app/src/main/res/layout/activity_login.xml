@@ -109,13 +109,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don't have an account? "/>
+            android:text="모락모락 계정이 없으신가요? "/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:id="@+id/create_account_text_view_btn"
-            android:text="Create Account"/>
+            android:text="계정 만들기"/>
 
     </LinearLayout>
 
